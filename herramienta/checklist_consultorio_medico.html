@@ -1,0 +1,626 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Checklist — Auditoría de Seguridad · Consultorio Médico</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F5F5F3;color:#1a1a1a;font-size:14px;line-height:1.5}
+.header{background:#1D6FA4;color:white;padding:1.25rem 1.5rem;display:flex;align-items:center;justify-content:space-between;gap:1rem;flex-wrap:wrap}
+.header-title{font-size:16px;font-weight:500}
+.header-sub{font-size:12px;opacity:.8;margin-top:2px}
+.header-right{display:flex;gap:6px;flex-wrap:wrap}
+.hbtn{padding:6px 12px;font-size:11px;border:1px solid rgba(255,255,255,.35);border-radius:6px;cursor:pointer;background:rgba(255,255,255,.12);color:white;font-family:inherit;transition:background .15s}
+.hbtn:hover{background:rgba(255,255,255,.22)}
+.container{max-width:940px;margin:0 auto;padding:1.25rem}
+.summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:1rem}
+.sc{background:white;border:1px solid #E0E0DC;border-radius:8px;padding:.65rem .75rem;text-align:center}
+.sn{font-size:20px;font-weight:500;color:#1a1a1a}
+.sl{font-size:11px;color:#888;margin-top:2px}
+.risk-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:1rem}
+.risk-card{border-radius:8px;padding:.55rem .75rem;text-align:center;border:1px solid}
+.rc-a{background:#FCEBEB;border-color:#F09595}.rc-m{background:#FAEEDA;border-color:#EF9F27}.rc-b{background:#EAF3DE;border-color:#97C459}
+.rn{font-size:18px;font-weight:500}.rn-a{color:#A32D2D}.rn-m{color:#854F0B}.rn-b{color:#3B6D11}
+.rl{font-size:10px;margin-top:1px}.rl-a{color:#A32D2D}.rl-m{color:#854F0B}.rl-b{color:#3B6D11}
+.prog-wrap{background:white;border:1px solid #E0E0DC;border-radius:8px;padding:.65rem 1rem;margin-bottom:1rem}
+.prog-label{display:flex;justify-content:space-between;font-size:12px;color:#666;margin-bottom:6px}
+.prog-bar{height:8px;border-radius:4px;background:#F0F0EC;overflow:hidden}
+.prog-fill{height:100%;border-radius:4px;background:#1D9E75;transition:width .3s}
+.card{background:white;border:1px solid #E0E0DC;border-radius:8px;padding:1rem;margin-bottom:1rem}
+.card-title{font-size:13px;font-weight:500;color:#1D6FA4;margin-bottom:.75rem;display:flex;align-items:center;gap:6px}
+.field-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.field-grid-3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+label{font-size:11px;color:#888;display:block;margin-bottom:3px}
+input[type=text],input[type=date],select,textarea{width:100%;padding:6px 8px;border:1px solid #D0D0CC;border-radius:4px;font-size:12px;font-family:inherit;color:#1a1a1a;background:white}
+input:focus,select:focus,textarea:focus{outline:none;border-color:#1D6FA4}
+textarea{resize:vertical}
+.activo-row{display:grid;grid-template-columns:2fr 1fr 1fr;gap:8px;padding:.4rem 0;border-bottom:1px solid #F0F0EC;align-items:center;font-size:12px}
+.activo-row:last-child{border-bottom:none}
+.tabs{display:flex;gap:5px;margin-bottom:1rem;flex-wrap:wrap}
+.tab{padding:5px 11px;font-size:11px;border:1px solid #D0D0CC;border-radius:6px;cursor:pointer;color:#666;background:white}
+.tab.active{background:#1D6FA4;color:white;border-color:#1D6FA4;font-weight:500}
+.cat-header{display:flex;align-items:center;gap:8px;padding:.6rem 1rem;background:#F7F7F5;border-bottom:1px solid #E0E0DC}
+.cat-badge{font-size:10px;font-weight:500;padding:2px 7px;border-radius:10px}
+.sec{background:white;border:1px solid #E0E0DC;border-radius:8px;margin-bottom:.75rem;overflow:hidden}
+.item{border-bottom:1px solid #F5F5F2;padding:.6rem 1rem}
+.item:last-child{border-bottom:none}
+.item-top{display:flex;align-items:flex-start;gap:8px;cursor:pointer}
+.item-top:hover .il{color:#1D6FA4}
+.cb{width:17px;height:17px;border:1.5px solid #CCC;border-radius:4px;flex-shrink:0;margin-top:2px;display:flex;align-items:center;justify-content:center;transition:all .15s;background:white}
+.cb.done{background:#1D9E75;border-color:#1D9E75}
+.cb.done::after{content:'✓';color:white;font-size:11px;font-weight:500}
+.il{font-size:13px;color:#1a1a1a;line-height:1.5;flex:1;transition:color .15s}
+.il.done{text-decoration:line-through;color:#999}
+.inote{font-size:11px;color:#888;margin-top:3px;line-height:1.4;font-style:italic}
+.imeta{display:flex;gap:6px;flex-wrap:wrap;margin-top:4px}
+.iiso{font-size:10px;color:#185FA5;font-weight:500}
+.iley{font-size:10px;font-weight:500;color:#854F0B;background:#FAEEDA;padding:1px 6px;border-radius:4px}
+.badge{display:inline-block;font-size:10px;font-weight:500;padding:2px 7px;border-radius:4px;flex-shrink:0}
+.b-a{background:#FCEBEB;color:#A32D2D}
+.b-m{background:#FAEEDA;color:#854F0B}
+.b-b{background:#EAF3DE;color:#3B6D11}
+.mad-row{display:flex;align-items:center;gap:6px;margin-top:7px;padding-top:6px;border-top:1px solid #F0F0EC}
+.mad-lbl{font-size:11px;color:#888;width:70px;flex-shrink:0}
+.mad-btns{display:flex;gap:3px;flex-wrap:wrap}
+.mb{padding:2px 8px;font-size:10px;border:1px solid #D0D0CC;border-radius:4px;cursor:pointer;background:white;color:#666;font-family:inherit}
+.mb:hover{border-color:#1D6FA4;color:#1D6FA4}
+.mb.sel-0{background:#FCEBEB;color:#A32D2D;border-color:#F09595;font-weight:500}
+.mb.sel-1{background:#FAEEDA;color:#854F0B;border-color:#EF9F27;font-weight:500}
+.mb.sel-2{background:#E6F1FB;color:#185FA5;border-color:#85B7EB;font-weight:500}
+.mb.sel-3{background:#EAF3DE;color:#3B6D11;border-color:#97C459;font-weight:500}
+.obs-row{display:flex;align-items:flex-start;gap:6px;margin-top:5px}
+.obs-lbl{font-size:11px;color:#888;width:70px;flex-shrink:0;padding-top:5px}
+.obs-input{flex:1;font-size:11px;border:1px solid #D0D0CC;border-radius:4px;padding:4px 7px;background:white;color:#1a1a1a;resize:none;font-family:inherit;min-height:38px}
+.obs-input:focus{outline:none;border-color:#1D6FA4}
+.btn{border:1px solid #CCC;background:white;color:#333;border-radius:6px;padding:7px 14px;font-size:12px;cursor:pointer;font-family:inherit;transition:all .15s}
+.btn:hover{background:#F5F5F3;border-color:#999}
+.btn-primary{background:#1D6FA4;color:white;border-color:#1D6FA4}
+.btn-primary:hover{background:#155A87}
+.btn-green{background:#1D9E75;color:white;border-color:#1D9E75}
+.btn-green:hover{background:#157A5A}
+.btn-danger{color:#A32D2D;border-color:#F09595}
+.btn-danger:hover{background:#FCEBEB}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:1rem;padding-top:1rem;border-top:1px solid #E0E0DC}
+.info{background:#E8F2FA;border-radius:6px;padding:.6rem 1rem;font-size:12px;color:#0C447C;margin-bottom:1rem;border-left:3px solid #1D6FA4;line-height:1.6}
+.modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,.45);z-index:100;align-items:flex-start;justify-content:center;padding:2rem 1rem;overflow-y:auto}
+.modal.show{display:flex}
+.modal-content{background:white;border-radius:10px;padding:1.5rem;max-width:680px;width:100%;margin:auto}
+.modal-title{font-size:15px;font-weight:500;margin-bottom:1rem;color:#1D6FA4}
+.modal-close{float:right;cursor:pointer;color:#999;font-size:20px;line-height:1;margin-top:-2px}
+.modal-close:hover{color:#333}
+.footer{text-align:center;font-size:11px;color:#AAA;padding:1.5rem;margin-top:.5rem}
+.time-display{font-size:11px;color:#888;margin-top:4px}
+.cat-risk-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+@media(max-width:600px){.summary,.risk-row,.field-grid,.field-grid-3{grid-template-columns:repeat(2,1fr)}.activo-row{grid-template-columns:1fr 1fr}}
+@media print{.header-right,.tabs,.btn-row,.modal,.hbtn{display:none!important}.container{padding:0}body{background:white}.sec{break-inside:avoid}}
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div>
+    <div class="header-title">Checklist de Auditoría de Seguridad — Consultorio Médico</div>
+    <div class="header-sub">ISO 27001:2022 · Ley 25.326 · Ley 26.529 · Gaspar Peralta — Auditor en formación</div>
+  </div>
+  <div class="header-right">
+    <button class="hbtn" onclick="exportData()">💾 Guardar JSON</button>
+    <button class="hbtn" onclick="importData()">📂 Cargar JSON</button>
+    <button class="hbtn" onclick="window.print()">🖨️ Imprimir</button>
+    <button class="hbtn" onclick="showReport()">📄 Ver resumen</button>
+    <button class="hbtn" style="background:rgba(29,158,117,.4);border-color:rgba(255,255,255,.5);font-weight:500" onclick="exportForClaude()">🤖 Exportar para Claude ↗</button>
+  </div>
+</div>
+
+<div class="container">
+
+<div class="info">
+  Completá cada sección durante el relevamiento. Al finalizar usá <strong>"Exportar para Claude"</strong> para generar el texto listo para pegar en Claude y que genere el informe completo con PDF, radar de madurez y matriz de riesgo.
+</div>
+
+<!-- DATOS DEL RELEVAMIENTO -->
+<div class="card">
+  <div class="card-title">📋 Datos del relevamiento</div>
+  <div class="field-grid" style="margin-bottom:10px">
+    <div><label>Nombre del consultorio / médico</label><input type="text" id="cliente-nombre" placeholder="Dra. [Nombre] — Clínica médica"></div>
+    <div><label>Dirección / Ciudad</label><input type="text" id="cliente-dir" placeholder="Bahía Blanca, Buenos Aires"></div>
+  </div>
+  <div class="field-grid-3" style="margin-bottom:10px">
+    <div><label>Fecha del relevamiento</label><input type="date" id="fecha-relev"></div>
+    <div><label>Hora de inicio</label><input type="time" id="hora-inicio"></div>
+    <div><label>Hora de fin</label><input type="time" id="hora-fin"></div>
+  </div>
+  <div class="field-grid" style="margin-bottom:10px">
+    <div><label>Modalidad</label>
+      <select id="modalidad"><option>Videollamada</option><option>Presencial</option><option>Mixta (videollamada + visita)</option></select>
+    </div>
+    <div><label>Personal presente</label><input type="text" id="personal" placeholder="Ej: Médico titular, recepcionista"></div>
+  </div>
+  <div><label>Observaciones generales del relevamiento</label>
+    <textarea id="obs-general" rows="2" placeholder="Anotá contexto general, condiciones del relevamiento, actitud del cliente, cosas que llamaron la atención antes de entrar al checklist..."></textarea>
+  </div>
+</div>
+
+<!-- ACTIVOS IDENTIFICADOS -->
+<div class="card">
+  <div class="card-title">🗃️ Activos identificados (completar al inicio)</div>
+  <div style="font-size:11px;color:#888;margin-bottom:.75rem">Preguntá esto en los primeros minutos: qué sistemas usan, dónde guardan la información, con qué equipos trabajan.</div>
+  <div class="activo-row" style="font-weight:500;font-size:11px;color:#666;background:#F7F7F5;padding:.4rem .5rem;border-radius:4px 4px 0 0">
+    <div>Activo</div><div>Tipo</div><div>Criticidad</div>
+  </div>
+  <div id="activos-body"></div>
+  <div style="margin-top:.5rem"><label>Otros activos no listados</label>
+    <textarea id="otros-activos" rows="1" placeholder="Ej: Servidor propio, sistema de facturación electrónica, app de turnos online..."></textarea>
+  </div>
+</div>
+
+<!-- RESUMEN EN TIEMPO REAL -->
+<div class="summary">
+  <div class="sc"><div class="sn" id="s-cum">0</div><div class="sl">Cumplidos</div></div>
+  <div class="sc"><div class="sn" id="s-tot">0</div><div class="sl">Total controles</div></div>
+  <div class="sc"><div class="sn" id="s-pct">0%</div><div class="sl">Cumplimiento</div></div>
+  <div class="sc"><div class="sn" id="s-mad">—</div><div class="sl">Madurez media</div></div>
+</div>
+
+<div class="risk-row">
+  <div class="risk-card rc-a"><div class="rn rn-a" id="r-alto">0</div><div class="rl rl-a">Hallazgos de riesgo alto</div></div>
+  <div class="risk-card rc-m"><div class="rn rn-m" id="r-medio">0</div><div class="rl rl-m">Hallazgos de riesgo medio</div></div>
+  <div class="risk-card rc-b"><div class="rn rn-b" id="r-bajo">0</div><div class="rl rl-b">Hallazgos de riesgo bajo</div></div>
+</div>
+
+<div class="prog-wrap">
+  <div class="prog-label"><span>Progreso del relevamiento</span><span id="prog-txt">0 de 0 controles completados</span></div>
+  <div class="prog-bar"><div class="prog-fill" id="prog" style="width:0%"></div></div>
+</div>
+
+<div class="tabs">
+  <button class="tab active" onclick="showCat('all',this)">Todas</button>
+  <button class="tab" onclick="showCat('datos',this)">1. Datos pacientes</button>
+  <button class="tab" onclick="showCat('accesos',this)">2. Accesos</button>
+  <button class="tab" onclick="showCat('backups',this)">3. Backups</button>
+  <button class="tab" onclick="showCat('equipos',this)">4. Equipos y red</button>
+  <button class="tab" onclick="showCat('fisico',this)">5. Seg. física</button>
+  <button class="tab" onclick="showCat('incidentes',this)">6. Incidentes</button>
+  <button class="tab" onclick="showCat('legal',this)">7. Legal</button>
+</div>
+
+<div id="checklist-body"></div>
+
+<!-- CIERRE DEL RELEVAMIENTO -->
+<div class="card" style="margin-top:1rem">
+  <div class="card-title">📝 Cierre del relevamiento</div>
+  <div><label>Observaciones finales / cosas que no entraron en ningún control</label>
+    <textarea id="obs-cierre" rows="3" placeholder="Ej: El médico mencionó que están pensando en cambiar el sistema. La recepcionista no estaba presente durante la segunda parte. Se notó que los archivos en papel estaban en el pasillo accesible a pacientes..."></textarea>
+  </div>
+  <div style="margin-top:8px"><label>Próximos pasos acordados con el cliente</label>
+    <textarea id="proximos-pasos" rows="2" placeholder="Ej: El médico va a consultar con su técnico sobre el backup. Acordamos una reunión de entrega del informe en 7 días..."></textarea>
+  </div>
+</div>
+
+<div class="btn-row">
+  <button class="btn btn-green" onclick="exportForClaude()">🤖 Exportar para Claude — generar informe ↗</button>
+  <button class="btn btn-primary" onclick="showReport()">📄 Ver resumen local</button>
+  <button class="btn" onclick="exportData()">💾 Guardar progreso (JSON)</button>
+  <button class="btn btn-danger" onclick="resetAll()">↺ Reiniciar todo</button>
+</div>
+
+<div class="footer">
+  Gaspar Peralta — Auditor en formación ISO 27001 Lead Auditor PECB · gaspar.peralta@outlook.com.ar · Bahía Blanca, Argentina<br>
+  Documento confidencial — uso interno bajo NDA firmado
+</div>
+</div>
+
+<!-- MODAL RESUMEN -->
+<div class="modal" id="modal-report">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeModal('modal-report')">✕</span>
+    <div class="modal-title">📄 Resumen del relevamiento</div>
+    <div id="modal-body"></div>
+    <div style="margin-top:1rem;display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="copyReport()">Copiar texto</button>
+      <button class="btn" onclick="closeModal('modal-report')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EXPORTAR PARA CLAUDE -->
+<div class="modal" id="modal-claude">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeModal('modal-claude')">✕</span>
+    <div class="modal-title">🤖 Texto listo para Claude</div>
+    <p style="font-size:12px;color:#666;margin-bottom:.75rem">Copiá este texto completo y pegalo en Claude para generar el informe ejecutivo con PDF, radar de madurez y matriz de riesgo.</p>
+    <textarea id="claude-text" style="width:100%;height:280px;font-size:11px;font-family:monospace;border:1px solid #D0D0CC;border-radius:4px;padding:8px;resize:vertical" readonly></textarea>
+    <div style="margin-top:.75rem;display:flex;gap:8px">
+      <button class="btn btn-green" onclick="copyClaude()">📋 Copiar al portapapeles</button>
+      <button class="btn" onclick="closeModal('modal-claude')">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL IMPORTAR -->
+<div class="modal" id="modal-import">
+  <div class="modal-content">
+    <span class="modal-close" onclick="closeModal('modal-import')">✕</span>
+    <div class="modal-title">📂 Cargar progreso guardado</div>
+    <p style="font-size:12px;color:#666;margin-bottom:.75rem">Pegá el contenido del archivo JSON guardado anteriormente:</p>
+    <textarea id="import-text" style="width:100%;height:120px;border:1px solid #D0D0CC;border-radius:4px;padding:8px;font-size:11px;font-family:monospace;resize:vertical" placeholder='{"state":{...},"madurez":{...},...}'></textarea>
+    <div style="margin-top:.75rem;display:flex;gap:8px">
+      <button class="btn btn-primary" onclick="doImport()">Cargar</button>
+      <button class="btn" onclick="closeModal('modal-import')">Cancelar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const cats={
+  datos:{title:"Categoría 1 — Datos de pacientes",emoji:"🗂️",items:[
+    {l:"¿Los datos de pacientes están almacenados en sistemas con acceso restringido?",n:"Verificar si el sistema digital tiene usuario y contraseña. El papel también cuenta.",r:"alto",iso:"A.5.12 — Clasificación de la información",ley:"Ley 25.326 Art.12"},
+    {l:"¿Solo el personal autorizado puede ver las historias clínicas?",n:"¿Quién tiene acceso: solo el médico, también la recepcionista? ¿Hay criterio definido?",r:"alto",iso:"A.5.15 — Control de acceso",ley:"Ley 26.529 Art.2"},
+    {l:"¿Saben qué datos personales recopilan y dónde exactamente los guardan?",n:"Nombre, DNI, obra social, diagnósticos, medicación. ¿Hay un registro de qué guardan?",r:"medio",iso:"A.5.9 — Inventario de activos de información",ley:"Ley 25.326 Art.8"},
+    {l:"¿Las historias clínicas en papel están separadas del área de acceso general?",n:"¿Están en un archivo o cajón accesible a cualquiera o con algún control físico?",r:"medio",iso:"A.7.3 — Seguridad de oficinas y consultorios",ley:"Ley 26.529 Art.14"},
+    {l:"¿Tienen algún criterio sobre cuánto tiempo conservan los datos de pacientes?",n:"Legalmente las HC deben conservarse mínimo 10 años. ¿Lo saben y lo aplican?",r:"bajo",iso:"A.5.12 — Clasificación de la información",ley:"Ley 26.529 Art.15"},
+  ]},
+  accesos:{title:"Categoría 2 — Accesos y usuarios",emoji:"🔐",items:[
+    {l:"¿El médico y la recepcionista tienen usuarios individuales en el sistema digital?",n:"O comparten un mismo login. Si comparten, cualquier acción queda sin trazabilidad.",r:"alto",iso:"A.5.16 — Gestión de identidades",ley:""},
+    {l:"¿Las contraseñas son únicas y no se comparten verbalmente ni por escrito?",n:"Buscar post-its, cuadernos con contraseñas o si la recepcionista conoce la del médico.",r:"alto",iso:"A.5.17 — Información de autenticación",ley:""},
+    {l:"¿Las contraseñas tienen un mínimo de complejidad? (letras, números, no obvias)",n:"Preguntar sin pedir que las digan. ¿Usan nombre del consultorio, '1234', fecha de nac.?",r:"medio",iso:"A.5.17 — Información de autenticación",ley:""},
+    {l:"¿Si se fuera la recepcionista hoy, cambiarían sus accesos de forma inmediata?",n:"Procedimiento de baja de accesos. ¿Existe aunque sea informal? ¿Quién se encargaría?",r:"alto",iso:"A.5.18 — Derechos de acceso",ley:"Ley 25.326 Art.9"},
+    {l:"¿El sistema de turnos tiene acceso diferenciado del sistema de historias clínicas?",n:"O todo está en la misma plataforma con el mismo usuario.",r:"medio",iso:"A.8.5 — Autenticación segura",ley:""},
+    {l:"¿Las pantallas se bloquean automáticamente cuando no se usan por un tiempo?",n:"O quedan abiertas si el médico se va a atender al paciente en otra sala.",r:"medio",iso:"A.7.7 — Escritorio y pantalla limpios",ley:""},
+  ]},
+  backups:{title:"Categoría 3 — Copias de seguridad",emoji:"☁️",items:[
+    {l:"¿Realizan copias de seguridad del sistema digital de historias clínicas?",n:"Sí/no, con qué frecuencia (diario, semanal, nunca) y quién es el responsable.",r:"alto",iso:"A.8.13 — Respaldo de información",ley:"Ley 26.529 Art.15"},
+    {l:"¿Dónde se guardan los backups? ¿Están separados del equipo principal?",n:"En la misma PC no sirve. ¿Disco externo, nube, servidor separado?",r:"alto",iso:"A.8.13 — Respaldo de información",ley:""},
+    {l:"¿Alguna vez probaron recuperar información de un backup?",n:"Un backup no probado puede estar corrupto o incompleto sin saberlo.",r:"medio",iso:"A.8.13 — Respaldo de información",ley:""},
+    {l:"¿Los documentos en papel tienen alguna copia o registro alternativo?",n:"Si se pierden o destruyen las HC en papel, ¿hay algo para reconstruir la información?",r:"bajo",iso:"A.8.13 — Respaldo de información",ley:"Ley 26.529 Art.14"},
+  ]},
+  equipos:{title:"Categoría 4 — Equipos y red",emoji:"💻",items:[
+    {l:"¿Los equipos con datos de pacientes tienen antivirus activo y actualizado?",n:"No solo instalado: verificar que la licencia esté vigente y sin alertas pendientes.",r:"alto",iso:"A.8.7 — Protección contra malware",ley:""},
+    {l:"¿El sistema operativo de los equipos está actualizado con los últimos parches?",n:"Windows desactualizado = vulnerabilidades conocidas y públicas. ¿Actualizaciones automáticas?",r:"medio",iso:"A.8.8 — Gestión de vulnerabilidades técnicas",ley:""},
+    {l:"¿La red WiFi del consultorio está separada de la que usan los pacientes?",n:"Si hay una sola red, los pacientes podrían estar en el mismo entorno que los datos médicos.",r:"medio",iso:"A.8.20 — Seguridad en redes",ley:""},
+    {l:"¿El router tiene la contraseña por defecto cambiada?",n:"Las contraseñas de fábrica son públicas. ¿Alguna vez la cambiaron?",r:"alto",iso:"A.8.20 — Seguridad en redes",ley:""},
+    {l:"¿Usan software con licencia válida en los equipos del consultorio?",n:"Software pirata es vector de malware. ¿Windows original, Office o alternativas gratuitas?",r:"medio",iso:"A.8.19 — Instalación de software",ley:""},
+  ]},
+  fisico:{title:"Categoría 5 — Seguridad física",emoji:"🏥",items:[
+    {l:"¿Las pantallas con datos de pacientes no son visibles desde la sala de espera?",n:"Si el monitor da hacia la sala, cualquier paciente puede ver datos de otro.",r:"medio",iso:"A.7.7 — Escritorio y pantalla limpios",ley:"Ley 26.529 Art.2"},
+    {l:"¿El archivo de historias clínicas en papel está bajo llave o en área restringida?",n:"¿Cualquier persona que entra al consultorio puede acceder a las carpetas de pacientes?",r:"medio",iso:"A.7.3 — Seguridad de oficinas y consultorios",ley:"Ley 26.529 Art.14"},
+    {l:"¿El consultorio permanece cerrado con llave cuando no hay personal presente?",n:"¿Los equipos quedan encendidos y accesibles si se van a almorzar o salen un momento?",r:"medio",iso:"A.7.1 — Perímetro de seguridad física",ley:""},
+    {l:"¿Hay control sobre quién puede ingresar al área donde están los equipos y archivos?",n:"¿Puede entrar cualquier paciente a la zona de la PC? ¿Hay separación física?",r:"bajo",iso:"A.7.2 — Controles de acceso físico",ley:""},
+  ]},
+  incidentes:{title:"Categoría 6 — Gestión de incidentes",emoji:"⚠️",items:[
+    {l:"¿Saben qué harían si detectan que les robaron o perdieron datos de pacientes?",n:"¿Hay procedimiento aunque sea informal? ¿Saben que pueden tener obligación legal de notificar?",r:"alto",iso:"A.5.24 — Gestión de incidentes de seguridad",ley:"Ley 25.326 Art.12"},
+    {l:"¿Tienen un contacto técnico de confianza para emergencias informáticas?",n:"Si el sistema falla o hay un virus, ¿a quién llaman? ¿Hay alguien definido?",r:"medio",iso:"A.5.24 — Gestión de incidentes de seguridad",ley:""},
+    {l:"¿El personal conoce conceptos básicos de seguridad? (phishing, contraseñas, links sospechosos)",n:"¿Alguna vez hablaron del tema? ¿La recepcionista sabe reconocer un email de phishing?",r:"medio",iso:"A.6.3 — Concienciación y formación en seguridad",ley:"Ley 25.326 Art.9"},
+    {l:"¿Saben qué hacer si ven un correo sospechoso o un programa raro en el equipo?",n:"¿Hay alguna práctica establecida o actúan por intuición en el momento?",r:"medio",iso:"A.6.3 — Concienciación y formación en seguridad",ley:""},
+  ]},
+  legal:{title:"Categoría 7 — Cumplimiento legal",emoji:"⚖️",items:[
+    {l:"¿Los pacientes firman un consentimiento informado para el tratamiento de sus datos?",n:"Obligatorio bajo Ley 25.326. Debe especificar qué datos, con qué fin y quién accede.",r:"alto",iso:"A.5.31 — Requisitos legales y regulatorios",ley:"Ley 25.326 Art.6"},
+    {l:"¿Están inscriptos como responsables de una base de datos ante la DNPDP?",n:"La Ley 25.326 exige inscripción ante la Dirección Nacional de Protección de Datos Personales.",r:"alto",iso:"A.5.31 — Requisitos legales y regulatorios",ley:"Ley 25.326 Art.21"},
+    {l:"¿El personal tiene algún compromiso formal de confidencialidad sobre los datos de pacientes?",n:"Aunque sea una cláusula en el contrato de trabajo o un documento simple firmado.",r:"medio",iso:"A.6.6 — Confidencialidad",ley:"Ley 25.326 Art.10"},
+    {l:"¿Los datos de pacientes se comparten con terceros (laboratorios, obras sociales, otros médicos)?",n:"Si se comparten, ¿hay consentimiento? ¿Se hace por email sin cifrar?",r:"medio",iso:"A.5.31 — Requisitos legales y regulatorios",ley:"Ley 25.326 Art.11"},
+    {l:"¿Tienen web o formularios online para turnos? ¿Tienen política de privacidad publicada?",n:"Si recopilan datos por web, la política de privacidad es obligatoria.",r:"bajo",iso:"A.5.31 — Requisitos legales y regulatorios",ley:"Ley 25.326 Art.6"},
+  ]},
+};
+
+const activosBase=[
+  {nombre:"Historias clínicas digitales",tipo:"Información",crit:"Crítica"},
+  {nombre:"Historias clínicas en papel",tipo:"Físico",crit:"Crítica"},
+  {nombre:"Sistema de gestión de turnos",tipo:"Software",crit:"Alta"},
+  {nombre:"PC / equipos del consultorio",tipo:"Físico",crit:"Alta"},
+  {nombre:"Credenciales de acceso al sistema",tipo:"Información",crit:"Alta"},
+  {nombre:"Router / red WiFi",tipo:"Físico",crit:"Media"},
+  {nombre:"Disco externo / backup",tipo:"Físico",crit:"Alta"},
+  {nombre:"Correo electrónico",tipo:"Servicio",crit:"Media"},
+];
+
+const madShort=["Inexistente","Informal","Definido","Gestionado"];
+let state={},madurez={},obs={},currentCat="all";
+let activosData=activosBase.map(a=>({...a,existe:"si",obs:""}));
+
+function key(cat,i){return cat+"_"+i;}
+
+function renderActivos(){
+  const body=document.getElementById("activos-body");
+  let html="";
+  activosData.forEach((a,i)=>{
+    html+=`<div class="activo-row">
+      <input type="text" value="${a.nombre}" oninput="activosData[${i}].nombre=this.value" style="font-size:12px">
+      <select onchange="activosData[${i}].crit=this.value" style="font-size:11px">
+        ${["Crítica","Alta","Media","Baja"].map(c=>`<option${a.crit===c?" selected":""}>${c}</option>`).join("")}
+      </select>
+      <select onchange="activosData[${i}].existe=this.value" style="font-size:11px">
+        <option value="si"${a.existe==="si"?" selected":""}>✓ Confirmado</option>
+        <option value="no"${a.existe==="no"?" selected":""}>✗ No existe</option>
+        <option value="?"${a.existe==="?"?" selected":""}>? Sin confirmar</option>
+      </select>
+    </div>`;
+  });
+  body.innerHTML=html;
+}
+
+function renderAll(){
+  const body=document.getElementById("checklist-body");
+  body.innerHTML="";
+  let total=0,cum=0,madSum=0,madCount=0,rA=0,rM=0,rB=0;
+  Object.entries(cats).forEach(([catId,cat])=>{
+    if(currentCat!=="all"&&currentCat!==catId)return;
+    let sc=cat.items.filter((_,i)=>state[key(catId,i)]).length;
+    total+=cat.items.length;cum+=sc;
+    let catA=0,catM=0,catB=0;
+    cat.items.forEach((item,i)=>{
+      if(!state[key(catId,i)]){
+        if(item.r==="alto"){catA++;rA++;}
+        else if(item.r==="medio"){catM++;rM++;}
+        else{catB++;rB++;}
+      }
+    });
+    const catBadge=catA>0?`<span class="cat-badge" style="background:#FCEBEB;color:#A32D2D">${catA} alto${catA>1?"s":""}</span>`
+      :catM>0?`<span class="cat-badge" style="background:#FAEEDA;color:#854F0B">${catM} medio${catM>1?"s":""}</span>`
+      :`<span class="cat-badge" style="background:#EAF3DE;color:#3B6D11">Sin hallazgos</span>`;
+    const sec=document.createElement("div");sec.className="sec";
+    let html=`<div class="cat-header">
+      <span style="font-size:16px">${cat.emoji}</span>
+      <span style="font-size:13px;font-weight:500;flex:1;color:#1a1a1a">${cat.title}</span>
+      ${catBadge}
+      <span style="font-size:11px;color:#888;margin-left:8px">${sc}/${cat.items.length}</span>
+    </div>`;
+    cat.items.forEach((item,i)=>{
+      const k=key(catId,i);const done=!!state[k];const mad=madurez[k]??-1;const obsTxt=obs[k]||"";
+      if(mad>=0){madSum+=mad;madCount++;}
+      const rC=item.r==="alto"?"a":item.r==="medio"?"m":"b";
+      html+=`<div class="item">
+        <div class="item-top" onclick="toggle('${catId}',${i})">
+          <div class="cb${done?" done":""}"></div>
+          <div style="flex:1">
+            <div class="il${done?" done":""}">${item.l}</div>
+            <div class="inote">${item.n}</div>
+            <div class="imeta">
+              <span class="iiso">🛡 ${item.iso}</span>
+              ${item.ley?`<span class="iley">⚖️ ${item.ley}</span>`:""}
+            </div>
+          </div>
+          <span class="badge b-${rC}">${item.r.charAt(0).toUpperCase()+item.r.slice(1)}</span>
+        </div>
+        <div class="mad-row">
+          <span class="mad-lbl">Madurez:</span>
+          <div class="mad-btns">${[0,1,2,3].map(v=>`<button class="mb${mad===v?" sel-"+v:""}" onclick="setMad('${catId}',${i},${v})">${v} — ${madShort[v]}</button>`).join("")}</div>
+        </div>
+        <div class="obs-row">
+          <span class="obs-lbl">Observación:</span>
+          <textarea class="obs-input" rows="2" placeholder="Anotá exactamente lo que dijeron o lo que observaste..." oninput="setObs('${catId}',${i},this.value)">${obsTxt}</textarea>
+        </div>
+      </div>`;
+    });
+    sec.innerHTML=html;body.appendChild(sec);
+  });
+  document.getElementById("s-cum").textContent=cum;
+  document.getElementById("s-tot").textContent=total;
+  const pct=total?Math.round(cum/total*100):0;
+  document.getElementById("s-pct").textContent=pct+"%";
+  document.getElementById("s-mad").textContent=madCount?+(madSum/madCount).toFixed(1)+"/3":"—";
+  document.getElementById("prog").style.width=pct+"%";
+  document.getElementById("prog-txt").textContent=`${cum} de ${total} controles cumplidos`;
+  document.getElementById("r-alto").textContent=rA;
+  document.getElementById("r-medio").textContent=rM;
+  document.getElementById("r-bajo").textContent=rB;
+}
+
+function toggle(cat,i){const k=key(cat,i);state[k]=!state[k];renderAll();}
+function setMad(cat,i,v){const k=key(cat,i);madurez[k]=madurez[k]===v?-1:v;renderAll();}
+function setObs(cat,i,v){obs[key(cat,i)]=v;}
+
+function showCat(cat,el){
+  currentCat=cat;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  el.classList.add("active");
+  renderAll();
+}
+
+function resetAll(){
+  if(!confirm("¿Reiniciar todo el checklist? Se perderán todos los datos no guardados."))return;
+  state={};madurez={};obs={};
+  ["cliente-nombre","cliente-dir","obs-general","otros-activos","obs-cierre","proximos-pasos"].forEach(id=>{document.getElementById(id).value="";});
+  document.getElementById("fecha-relev").value="";
+  document.getElementById("hora-inicio").value="";
+  document.getElementById("hora-fin").value="";
+  activosData=activosBase.map(a=>({...a,existe:"si",obs:""}));
+  renderActivos();renderAll();
+}
+
+function exportData(){
+  const data={
+    cliente:document.getElementById("cliente-nombre").value,
+    dir:document.getElementById("cliente-dir").value,
+    fecha:document.getElementById("fecha-relev").value,
+    horaInicio:document.getElementById("hora-inicio").value,
+    horaFin:document.getElementById("hora-fin").value,
+    modalidad:document.getElementById("modalidad").value,
+    personal:document.getElementById("personal").value,
+    obsGeneral:document.getElementById("obs-general").value,
+    otrosActivos:document.getElementById("otros-activos").value,
+    obsCierre:document.getElementById("obs-cierre").value,
+    proximosPasos:document.getElementById("proximos-pasos").value,
+    activosData,state,madurez,obs,
+    exportado:new Date().toISOString()
+  };
+  const blob=new Blob([JSON.stringify(data,null,2)],{type:"application/json"});
+  const url=URL.createObjectURL(blob);const a=document.createElement("a");
+  const nombre=(document.getElementById("cliente-nombre").value||"consultorio").replace(/\s+/g,"_");
+  const fecha=document.getElementById("fecha-relev").value||new Date().toISOString().split("T")[0];
+  a.href=url;a.download=`auditoria_${nombre}_${fecha}.json`;a.click();URL.revokeObjectURL(url);
+}
+
+function importData(){document.getElementById("modal-import").classList.add("show");}
+function doImport(){
+  try{
+    const data=JSON.parse(document.getElementById("import-text").value);
+    state=data.state||{};madurez=data.madurez||{};obs=data.obs||{};
+    if(data.activosData)activosData=data.activosData;
+    const fields={
+      "cliente-nombre":"cliente","cliente-dir":"dir","obs-general":"obsGeneral",
+      "otros-activos":"otrosActivos","obs-cierre":"obsCierre","proximos-pasos":"proximosPasos",
+      "fecha-relev":"fecha","hora-inicio":"horaInicio","hora-fin":"horaFin","personal":"personal"
+    };
+    Object.entries(fields).forEach(([id,key])=>{if(data[key])document.getElementById(id).value=data[key];});
+    if(data.modalidad)document.getElementById("modalidad").value=data.modalidad;
+    closeModal("modal-import");renderActivos();renderAll();
+    alert("Datos cargados correctamente.");
+  }catch(e){alert("Error al cargar. Verificá que sea un JSON exportado desde este checklist.");}
+}
+
+function buildFindings(){
+  const findings=[];let total=0,cum=0;
+  Object.entries(cats).forEach(([catId,cat])=>{
+    cat.items.forEach((item,i)=>{
+      total++;const k=key(catId,i);
+      if(state[k])cum++;
+      else{
+        const mad=madurez[k]??-1;
+        findings.push({
+          cat:cat.title,label:item.l,risk:item.r,iso:item.iso,ley:item.ley,
+          mad:mad,madStr:mad>=0?madShort[mad]:"No evaluada",
+          obs:obs[k]||""
+        });
+      }
+    });
+  });
+  const madVals=Object.values(madurez).filter(v=>v>=0);
+  const madMedia=madVals.length?+(madVals.reduce((a,b)=>a+b,0)/madVals.length).toFixed(1):null;
+  return{findings,total,cum,madMedia};
+}
+
+function exportForClaude(){
+  const{findings,total,cum,madMedia}=buildFindings();
+  const cliente=document.getElementById("cliente-nombre").value||"[Nombre del consultorio]";
+  const dir=document.getElementById("cliente-dir").value||"Bahía Blanca, Argentina";
+  const fecha=document.getElementById("fecha-relev").value||"[Fecha]";
+  const horaI=document.getElementById("hora-inicio").value;
+  const horaF=document.getElementById("hora-fin").value;
+  const modalidad=document.getElementById("modalidad").value;
+  const personal=document.getElementById("personal").value;
+  const obsGen=document.getElementById("obs-general").value;
+  const otrosAct=document.getElementById("otros-activos").value;
+  const obsCierre=document.getElementById("obs-cierre").value;
+  const proxPasos=document.getElementById("proximos-pasos").value;
+  const pct=total?Math.round(cum/total*100):0;
+  const altos=findings.filter(f=>f.risk==="alto");
+  const medios=findings.filter(f=>f.risk==="medio");
+  const bajos=findings.filter(f=>f.risk==="bajo");
+
+  const activosConf=activosData.filter(a=>a.existe==="si").map(a=>`  - ${a.nombre} (${a.tipo} — Criticidad: ${a.crit})`).join("\n");
+  const activosNoConf=activosData.filter(a=>a.existe==="no").map(a=>`  - ${a.nombre}`).join("\n");
+
+  let txt=`DATOS DEL RELEVAMIENTO
+=====================
+Cliente: ${cliente}
+Ubicación: ${dir}
+Fecha: ${fecha}${horaI?"\nHora inicio: "+horaI:""}${horaF?" — Fin: "+horaF:""}
+Modalidad: ${modalidad}
+Personal presente: ${personal||"No especificado"}
+${obsGen?"\nObservaciones generales:\n"+obsGen:""}
+
+ACTIVOS IDENTIFICADOS
+====================
+Confirmados:
+${activosConf||"  (no completado)"}
+${activosNoConf?"\nNo presentes:\n"+activosNoConf:""}
+${otrosAct?"\nOtros activos mencionados: "+otrosAct:""}
+
+RESULTADOS DEL CHECKLIST
+========================
+Controles cumplidos: ${cum} de ${total} (${pct}%)
+Madurez media: ${madMedia?madMedia+"/3":"No evaluada"}
+Hallazgos de riesgo alto: ${altos.length}
+Hallazgos de riesgo medio: ${medios.length}
+Hallazgos de riesgo bajo: ${bajos.length}
+
+HALLAZGOS DETALLADOS (controles NO cumplidos)
+=============================================`;
+
+  if(altos.length){
+    txt+="\n\n[RIESGO ALTO]";
+    altos.forEach(f=>{txt+=`\n• ${f.cat}: ${f.label}\n  ISO: ${f.iso}${f.ley?"\n  Normativa: "+f.ley:""}\n  Madurez: ${f.madStr}${f.obs?"\n  Observación: "+f.obs:""}`;});
+  }
+  if(medios.length){
+    txt+="\n\n[RIESGO MEDIO]";
+    medios.forEach(f=>{txt+=`\n• ${f.cat}: ${f.label}\n  ISO: ${f.iso}${f.ley?"\n  Normativa: "+f.ley:""}\n  Madurez: ${f.madStr}${f.obs?"\n  Observación: "+f.obs:""}`;});
+  }
+  if(bajos.length){
+    txt+="\n\n[RIESGO BAJO]";
+    bajos.forEach(f=>{txt+=`\n• ${f.cat}: ${f.label}\n  ISO: ${f.iso}${f.ley?"\n  Normativa: "+f.ley:""}\n  Madurez: ${f.madStr}${f.obs?"\n  Observación: "+f.obs:""}`;});
+  }
+  if(findings.length===0){txt+="\n\nTodos los controles están marcados como cumplidos.";}
+
+  if(obsCierre)txt+=`\n\nOBSERVACIONES DE CIERRE\n=======================\n${obsCierre}`;
+  if(proxPasos)txt+=`\n\nPRÓXIMOS PASOS ACORDADOS\n========================\n${proxPasos}`;
+
+  txt+=`\n\nINSTRUCCIÓN PARA CLAUDE
+=======================
+Soy Gaspar Peralta, auditor en formación ISO 27001 Lead Auditor PECB. Realicé la revisión de seguridad detallada arriba.
+
+Por favor generá el informe ejecutivo profesional completo con:
+1. Resumen ejecutivo con métricas (controles, cumplimiento %, madurez media, riesgo general)
+2. Listado de activos identificados con criticidad
+3. Hallazgos organizados por nivel de riesgo (Alto primero) — para cada uno: descripción del problema, impacto potencial, recomendación concreta, referencia ISO 27001, nivel de madurez actual y objetivo, normativa argentina aplicable (Ley 25.326 y Ley 26.529)
+4. Puntos positivos (controles cumplidos destacables)
+5. Matriz de riesgo visual (probabilidad × impacto)
+6. Radar de madurez por categoría
+7. Plan de acción priorizado con responsable y plazo
+8. Conclusión
+9. Nota de confidencialidad
+
+Tono: profesional pero claro para el médico responsable. Sin jerga técnica excesiva. Al final generá el PDF completo listo para entregar.`;
+
+  document.getElementById("claude-text").value=txt;
+  document.getElementById("modal-claude").classList.add("show");
+}
+
+function copyClaude(){
+  const txt=document.getElementById("claude-text").value;
+  navigator.clipboard.writeText(txt).then(()=>{
+    const btn=event.target;btn.textContent="✓ Copiado";
+    setTimeout(()=>{btn.textContent="📋 Copiar al portapapeles";},2000);
+  }).catch(()=>{document.getElementById("claude-text").select();alert("Seleccioná el texto manualmente con Ctrl+A y copialo.");});
+}
+
+function showReport(){
+  const{findings,total,cum,madMedia}=buildFindings();
+  const pct=total?Math.round(cum/total*100):0;
+  const altos=findings.filter(f=>f.risk==="alto");
+  const medios=findings.filter(f=>f.risk==="medio");
+  const bajos=findings.filter(f=>f.risk==="bajo");
+  let html=`<div style="font-size:12px;line-height:1.7">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:.75rem">
+    <div style="background:#F0F7FF;border-radius:6px;padding:.5rem;text-align:center"><div style="font-size:18px;font-weight:500">${cum}/${total}</div><div style="font-size:10px;color:#666">Cumplidos</div></div>
+    <div style="background:#F0F7FF;border-radius:6px;padding:.5rem;text-align:center"><div style="font-size:18px;font-weight:500">${pct}%</div><div style="font-size:10px;color:#666">Cumplimiento</div></div>
+    <div style="background:#F0F7FF;border-radius:6px;padding:.5rem;text-align:center"><div style="font-size:18px;font-weight:500">${madMedia?madMedia+"/3":"—"}</div><div style="font-size:10px;color:#666">Madurez</div></div>
+  </div>`;
+  const fBlock=(arr,color,emoji)=>{
+    if(!arr.length)return"";
+    let h=`<p style="font-weight:500;color:${color};margin:.5rem 0 .25rem">${emoji} Riesgo ${arr[0].risk} (${arr.length})</p>`;
+    arr.forEach(f=>{h+=`<div style="border-left:3px solid ${color};padding:.35rem .7rem;margin:.25rem 0;border-radius:0 4px 4px 0;background:${color}11">
+      <div style="font-weight:500">${f.label}</div>
+      <div style="font-size:10px;color:#666;margin-top:2px">${f.iso}${f.ley?" · "+f.ley:""}${f.mad>=0?" · "+madShort[f.mad]:""}</div>
+      ${f.obs?`<div style="font-size:10px;color:#444;font-style:italic;margin-top:2px">📝 ${f.obs}</div>`:""}
+    </div>`;});
+    return h;
+  };
+  html+=fBlock(altos,"#A32D2D","🔴")+fBlock(medios,"#854F0B","🟡")+fBlock(bajos,"#3B6D11","🟢");
+  if(!findings.length)html+=`<p style="color:#3B6D11;padding:.6rem;background:#EAF3DE;border-radius:6px">✅ Todos los controles están marcados como cumplidos.</p>`;
+  html+="</div>";
+  document.getElementById("modal-body").innerHTML=html;
+  document.getElementById("modal-report").classList.add("show");
+}
+
+function copyReport(){
+  const txt=document.getElementById("modal-body").innerText;
+  navigator.clipboard.writeText(txt).then(()=>alert("Copiado.")).catch(()=>alert("Seleccioná el texto manualmente."));
+}
+
+function closeModal(id){document.getElementById(id).classList.remove("show");}
+
+renderActivos();
+renderAll();
+</script>
+</body>
+</html>
