@@ -36,4 +36,4 @@ cliente y no se publican ni comparten — el ejemplo en `ejemplo/` usa datos fic
 ## Autor
 
 **Gaspar Peralta** — Auditor en formación ISO 27001 Lead Auditor (PECB)
-Bahía Blanca, Argentina · gaspar.peralta@outlook.com.ar
+Punta Alta, Argentina · gaspar.peralta.sec@gmail.com
